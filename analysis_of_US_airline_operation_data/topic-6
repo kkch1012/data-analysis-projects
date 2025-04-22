@@ -1,0 +1,529 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb 28 12:39:13 2025
+
+@author: Admin
+"""
+
+import pandas as pd
+
+df = pd.read_csv('./data_2/2001.csv',encoding='latin')
+
+df_6 = df[df['Month']==6]
+df_7 = df[df['Month']==7]
+df_8 = df[df['Month']==8]
+df_9 = df[df['Month']==9]
+df_9_1 = df_9[df['DayofMonth'] >= 11]
+df_9_0 = df_9[df['DayofMonth'] < 11]
+df_10 = df[df['Month']==10]
+df_11 = df[df['Month']==11]
+df_12 = df[df['Month']==12]
+
+df_be = pd.concat([df_6,df_7,df_8,df_9_0])
+df_af = pd.concat([df_9_1,df_10,df_11,df_12])
+
+df_be.isna().sum()
+df_af.isna().sum()
+
+data = [
+        'Month','DepTime','CRSDepTime','ArrTime',
+        'CRSArrTime','ActualElapsedTime','CRSElapsedTime',
+        'AirTime','ArrDelay','DepDelay','Cancelled',
+        'Diverted','TaxiOut','TaxiIn'
+        ]
+df_be_a = df_be[data]
+
+df_be_a.isna().sum()
+
+
+print(len(df_be_a[df_be_a['Cancelled'] == 1]))
+# 43683
+print(len(df_be_a[df_be_a['Diverted'] == 1]))
+# 4769
+df_be_a = df_be_a.fillna(0)
+df_af_a = df_af[data]
+df_af_a = df_af_a.fillna(0)
+
+print(len(df_af_a[df_af_a['Cancelled'] == 1]))
+# 111434
+print(len(df_af_a[df_af_a['Diverted'] == 1]))
+# 3039
+data_1 = [
+        'Month','Cancelled','Diverted'
+        ]
+df_can= df[data_1]
+
+print(len(df_can[df_can['Cancelled']==1]))
+print(len(df_can[df_can['Cancelled']==0]))
+df_c = df_can.groupby('Month').sum()
+
+
+
+df_grouped = df_can.groupby('Month').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+    Diverted_0=('Diverted', lambda x: (x == 0).sum()),
+    Diverted_1=('Diverted', lambda x: (x == 1).sum())
+).reset_index()
+
+print(df_grouped)
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 크기 설정 (2행 2열)
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# x축 위치 설정
+x = np.arange(len(df_grouped['Month']))  # x축 위치
+width = 0.6  # 막대 너비
+
+# Cancelled 0
+axes[0, 0].bar(x, df_grouped['Cancelled_0'], width=width, color='royalblue')
+axes[0, 0].set_title("Cancelled 0 (Not Cancelled)", fontsize=14)
+axes[0, 0].set_xlabel("Month")
+axes[0, 0].set_ylabel("Count")
+axes[0, 0].set_xticks(x)
+axes[0, 0].set_xticklabels(df_grouped['Month'], rotation=45)
+
+# Cancelled 1
+axes[0, 1].bar(x, df_grouped['Cancelled_1'], width=width, color='tomato')
+axes[0, 1].set_title("Cancelled 1 (Cancelled)", fontsize=14)
+axes[0, 1].set_xlabel("Month")
+axes[0, 1].set_ylabel("Count")
+axes[0, 1].set_xticks(x)
+axes[0, 1].set_xticklabels(df_grouped['Month'], rotation=45)
+
+# Diverted 0
+axes[1, 0].bar(x, df_grouped['Diverted_0'], width=width, color='seagreen')
+axes[1, 0].set_title("Diverted 0 (Not Diverted)", fontsize=14)
+axes[1, 0].set_xlabel("Month")
+axes[1, 0].set_ylabel("Count")
+axes[1, 0].set_xticks(x)
+axes[1, 0].set_xticklabels(df_grouped['Month'], rotation=45)
+
+# Diverted 1
+axes[1, 1].bar(x, df_grouped['Diverted_1'], width=width, color='goldenrod')
+axes[1, 1].set_title("Diverted 1 (Diverted)", fontsize=14)
+axes[1, 1].set_xlabel("Month")
+axes[1, 1].set_ylabel("Count")
+axes[1, 1].set_xticks(x)
+axes[1, 1].set_xticklabels(df_grouped['Month'], rotation=45)
+
+# 레이아웃 조정
+plt.tight_layout()
+plt.show()
+
+df_0 = pd.read_csv('./data_2/2000.csv')
+df_2 = pd.read_csv('./data_2/2002.csv',encoding='latin')
+
+
+data_1 = [
+        'Month','Cancelled','Diverted'
+        ]
+
+df_filter_0 = df_0[data_1]
+df_filter_1 = df_2[data_1]
+
+df_filter_0.isna().sum()
+
+df_grouped_0 = df_filter_0.groupby('Month').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+    Diverted_0=('Diverted', lambda x: (x == 0).sum()),
+    Diverted_1=('Diverted', lambda x: (x == 1).sum())
+).reset_index()
+
+df_grouped_1 = df_filter_1.groupby('Month').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+    Diverted_0=('Diverted', lambda x: (x == 0).sum()),
+    Diverted_1=('Diverted', lambda x: (x == 1).sum())
+).reset_index()
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 크기 설정 (2행 2열)
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# x축 위치 설정 (Month 개수에 맞게 x축 위치 설정)
+x = np.arange(len(df_grouped_0))  
+width = 0.6  # 막대 너비
+
+# x축 레이블로 사용할 Month 값 (문자열 변환)
+month_labels = df_grouped_0['Month'].astype(str)
+
+# Cancelled 0
+axes[0, 0].bar(x, df_grouped_0['Cancelled_0'], width=width, color='royalblue')
+axes[0, 0].set_title("Cancelled 0 (Not Cancelled)", fontsize=14)
+axes[0, 0].set_xlabel("Month")
+axes[0, 0].set_ylabel("Count")
+axes[0, 0].set_xticks(x)
+axes[0, 0].set_xticklabels(month_labels, rotation=45)
+
+# Cancelled 1
+axes[0, 1].bar(x, df_grouped_0['Cancelled_1'], width=width, color='tomato')
+axes[0, 1].set_title("Cancelled 1 (Cancelled)", fontsize=14)
+axes[0, 1].set_xlabel("Month")
+axes[0, 1].set_ylabel("Count")
+axes[0, 1].set_xticks(x)
+axes[0, 1].set_xticklabels(month_labels, rotation=45)
+
+# Diverted 0
+axes[1, 0].bar(x, df_grouped_0['Diverted_0'], width=width, color='seagreen')
+axes[1, 0].set_title("Diverted 0 (Not Diverted)", fontsize=14)
+axes[1, 0].set_xlabel("Month")
+axes[1, 0].set_ylabel("Count")
+axes[1, 0].set_xticks(x)
+axes[1, 0].set_xticklabels(month_labels, rotation=45)
+
+# Diverted 1
+axes[1, 1].bar(x, df_grouped_0['Diverted_1'], width=width, color='goldenrod')
+axes[1, 1].set_title("Diverted 1 (Diverted)", fontsize=14)
+axes[1, 1].set_xlabel("Month")
+axes[1, 1].set_ylabel("Count")
+axes[1, 1].set_xticks(x)
+axes[1, 1].set_xticklabels(month_labels, rotation=45)
+
+# 레이아웃 조정
+plt.tight_layout()
+plt.show()
+
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 크기 설정 (2행 2열)
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# x축 위치 설정 (Month 개수에 맞게 x축 위치 설정)
+x = np.arange(len(df_grouped_1))  
+width = 0.6  # 막대 너비
+
+# x축 레이블로 사용할 Month 값 (문자열 변환)
+month_labels = df_grouped_1['Month'].astype(str)
+
+# Cancelled 0
+axes[0, 0].bar(x, df_grouped_1['Cancelled_0'], width=width, color='royalblue')
+axes[0, 0].set_title("Cancelled 0 (Not Cancelled)", fontsize=14)
+axes[0, 0].set_xlabel("Month")
+axes[0, 0].set_ylabel("Count")
+axes[0, 0].set_xticks(x)
+axes[0, 0].set_xticklabels(month_labels)
+
+# Cancelled 1
+axes[0, 1].bar(x, df_grouped_1['Cancelled_1'], width=width, color='tomato')
+axes[0, 1].set_title("Cancelled 1 (Cancelled)", fontsize=14)
+axes[0, 1].set_xlabel("Month")
+axes[0, 1].set_ylabel("Count")
+axes[0, 1].set_xticks(x)
+axes[0, 1].set_xticklabels(month_labels)
+
+# Diverted 0
+axes[1, 0].bar(x, df_grouped_1['Diverted_0'], width=width, color='seagreen')
+axes[1, 0].set_title("Diverted 0 (Not Diverted)", fontsize=14)
+axes[1, 0].set_xlabel("Month")
+axes[1, 0].set_ylabel("Count")
+axes[1, 0].set_xticks(x)
+axes[1, 0].set_xticklabels(month_labels)
+
+# Diverted 1
+axes[1, 1].bar(x, df_grouped_1['Diverted_1'], width=width, color='goldenrod')
+axes[1, 1].set_title("Diverted 1 (Diverted)", fontsize=14)
+axes[1, 1].set_xlabel("Month")
+axes[1, 1].set_ylabel("Count")
+axes[1, 1].set_xticks(x)
+axes[1, 1].set_xticklabels(month_labels)
+
+# 레이아웃 조정
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+df_0 = pd.read_csv('./data_2/2000.csv')
+df = pd.read_csv('./data_2/2001.csv',encoding='latin')
+df_2 = pd.read_csv('./data_2/2002.csv',encoding='latin')
+df_3 = pd.read_csv('./data_2/2003.csv')
+df_4 = pd.read_csv('./data_2/2004.csv')
+df_5 = pd.read_csv('./data_2/2005.csv')
+df_6 = pd.read_csv('./data_2/2006.csv')
+df_7 = pd.read_csv('./data_2/2007.csv')
+df_8 = pd.read_csv('./data_2/2008.csv')
+
+df_8.tail()
+
+data_2 = [
+        'Cancelled','Year'
+        ]
+data_delay = [
+    'ArrDelay','DepDelay','Year'
+    ]
+
+df_test_0 = df_0[data_2]
+df_test_1 = df[data_2]
+df_test_2 = df_2[data_2]
+df_test_3 = df_3[data_2]
+df_test_4 = df_4[data_2]
+df_test_5 = df_5[data_2]
+df_test_6 = df_6[data_2]
+df_test_7 = df_7[data_2]
+df_test_8 = df_8[data_2]
+
+df_te_0 = df_0[data_delay]
+df_te_1 = df[data_delay]
+df_te_2 = df_2[data_delay]
+df_te_3 = df_3[data_delay]
+df_te_4 = df_4[data_delay]
+df_te_5 = df_5[data_delay]
+df_te_6 = df_6[data_delay]
+df_te_7 = df_7[data_delay]
+df_te_8 = df_8[data_delay]
+
+
+df_te_0 = df_te_0.fillna(0)
+df_te_1 = df_te_1.fillna(0)
+df_te_2 = df_te_2.fillna(0)
+df_te_3 = df_te_3.fillna(0)
+df_te_4 = df_te_4.fillna(0)
+df_te_5 = df_te_5.fillna(0)
+df_te_6 = df_te_6.fillna(0)
+df_te_7 = df_te_7.fillna(0)
+df_te_8 = df_te_8.fillna(0)
+
+# 'ArrDelay'와 'DepDelay'를 'Year'별로 묶어서 합산하기
+df_te_0_grouped = df_te_0.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_1_grouped = df_te_1.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_2_grouped = df_te_2.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_3_grouped = df_te_3.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_4_grouped = df_te_4.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_5_grouped = df_te_5.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_6_grouped = df_te_6.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_7_grouped = df_te_7.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+df_te_8_grouped = df_te_8.groupby('Year').agg(
+    ArrDelay_sum=('ArrDelay', 'sum'),
+    DepDelay_sum=('DepDelay', 'sum')
+).reset_index()
+
+# 모든 데이터프레임을 하나로 합치기
+df_te_grouped = pd.concat([
+    df_te_0_grouped,
+    df_te_1_grouped,
+    df_te_2_grouped,
+    df_te_3_grouped,
+    df_te_4_grouped,
+    df_te_5_grouped,
+    df_te_6_grouped,
+    df_te_7_grouped,
+    df_te_8_grouped
+])
+
+# 데이터프레임을 연도별로 정렬
+df_te_grouped_sorted = df_te_grouped.sort_values(by='Year')
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 연도별로 ArrDelay와 DepDelay를 하나의 그래프에 시각화
+plt.figure(figsize=(12, 8))
+
+# x축: 연도, y축: 합산된 지연 시간 (ArrDelay_sum, DepDelay_sum)
+plt.bar(df_te_grouped_sorted['Year'], df_te_grouped_sorted['ArrDelay_sum'], width=0.4, label='Arrival Delay', color='royalblue', align='center')
+plt.bar(df_te_grouped_sorted['Year'], df_te_grouped_sorted['DepDelay_sum'], width=0.4, label='Departure Delay', color='tomato', align='edge')
+
+# 그래프 제목 및 레이블 설정
+plt.title('Total Arrival and Departure Delay by Year', fontsize=16)
+plt.xlabel('Year', fontsize=14)
+plt.ylabel('Total Delay Time (Minutes)', fontsize=14)
+plt.legend()
+
+# 그래프 출력
+plt.tight_layout()
+plt.show()
+
+
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 합산된 지연 시간 계산 (ArrDelay_sum + DepDelay_sum)
+df_te_grouped_sorted['TotalDelay'] = df_te_grouped_sorted['ArrDelay_sum'] + df_te_grouped_sorted['DepDelay_sum']
+
+# 그래프 크기 설정
+plt.figure(figsize=(12, 8))
+
+# x축: 연도, y축: 합산된 지연 시간 (TotalDelay)
+plt.bar(df_te_grouped_sorted['Year'], df_te_grouped_sorted['TotalDelay'], color='purple')
+
+# 그래프 제목 및 레이블 설정
+plt.title('Total Arrival and Departure Delay by Year', fontsize=16)
+plt.xlabel('Year', fontsize=14)
+plt.ylabel('Total Delay Time (Minutes)', fontsize=14)
+
+# 그래프 출력
+plt.tight_layout()
+plt.show()
+
+
+
+df_grouped_0 = df_test_0.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+df_grouped_1 = df_test_1.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+df_grouped_2 = df_test_2.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_3 = df_test_3.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_4 = df_test_4.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_5 = df_test_5.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_6 = df_test_6.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_7 = df_test_7.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_grouped_8 = df_test_8.groupby('Year').agg(
+    Cancelled_0=('Cancelled', lambda x: (x == 0).sum()),
+    Cancelled_1=('Cancelled', lambda x: (x == 1).sum()),
+).reset_index()
+
+df_test = pd.concat([df_grouped_0,df_grouped_1,df_grouped_2,df_grouped_3,df_grouped_4,df_grouped_5,df_grouped_6,df_grouped_7,df_grouped_8])
+
+
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 크기 설정 (1행 3열)
+fig, axes = plt.subplots(1, 3, figsize=(18, 8))
+
+# x축 위치 설정 (연도)
+x = df_test['Year'].unique()
+
+# 막대 너비
+width = 0.6
+
+# Cancelled 0 그래프
+axes[0].bar(x, df_test.groupby('Year')['Cancelled_0'].sum(), width=width, color='royalblue')
+axes[0].set_title("Cancelled 0 (Not Cancelled)", fontsize=16)
+axes[0].set_xlabel("Year", fontsize=14)
+axes[0].set_ylabel("Count", fontsize=14)
+axes[0].set_xticks(x)
+axes[0].set_xticklabels(x, rotation=45)
+
+# Cancelled 1 그래프
+axes[1].bar(x, df_test.groupby('Year')['Cancelled_1'].sum(), width=width, color='tomato')
+axes[1].set_title("Cancelled 1 (Cancelled)", fontsize=16)
+axes[1].set_xlabel("Year", fontsize=14)
+axes[1].set_ylabel("Count", fontsize=14)
+axes[1].set_xticks(x)
+axes[1].set_xticklabels(x, rotation=45)
+
+# Cancelled 1 비율 그래프 (Cancelled 1 / (Cancelled 0 + Cancelled 1) 비율)
+total = df_test.groupby('Year')['Cancelled_0'].sum() + df_test.groupby('Year')['Cancelled_1'].sum()
+cancelled_ratio = df_test.groupby('Year')['Cancelled_1'].sum() / total
+
+axes[2].bar(x, cancelled_ratio, width=width, color='goldenrod')
+axes[2].set_title("Cancelled 1 Ratio", fontsize=16)
+axes[2].set_xlabel("Year", fontsize=14)
+axes[2].set_ylabel("Ratio", fontsize=14)
+axes[2].set_xticks(x)
+axes[2].set_xticklabels(x, rotation=45)
+
+# 레이아웃 조정
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

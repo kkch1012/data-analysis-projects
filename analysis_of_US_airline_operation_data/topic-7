@@ -1,0 +1,271 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Feb 28 09:13:11 2025
+
+@author: Admin
+"""
+from matplotlib import font_manager, rc
+import platform
+
+if platform.system() == 'Windows':
+    path  = 'c:/Windows/Fonts/malgun.ttf'
+    font_name=font_manager.FontProperties(fname = path).get_name()
+    rc('font',family=font_name)
+elif platform.system() == 'Darwin':
+    rc('font', family='AppleGothic')
+else:
+    print('Check your OS system')
+    
+import pandas as pd
+
+df = pd.read_csv('./data/1987.csv')
+
+df['AirTime'].unique()
+
+df_1 = pd.read_csv('./data_2/2005.csv')
+
+df_1['AirTime'].unique()
+
+
+len(df['Origin'].unique())
+# 237
+len(df['Dest'].unique())
+
+len(df_1['Origin'].unique())
+# 286
+len(df_1['Dest'].unique())
+df_1['Dest'].unique()
+
+
+df_2000 = pd.read_csv('./data_2/2000.csv')
+df_2001 = pd.read_csv('./data_2/2001.csv')
+df_2002 = pd.read_csv('./data_2/2002.csv')
+df_2003 = pd.read_csv('./data_2/2003.csv')
+df_2004 = pd.read_csv('./data_2/2004.csv')
+df_2005 = pd.read_csv('./data_2/2005.csv')
+df_2006 = pd.read_csv('./data_2/2006.csv')
+df_2007 = pd.read_csv('./data_2/2007.csv')
+df_2008 = pd.read_csv('./data_2/2008.csv')
+df_mix78 = pd.concat([df_2007,df_2008])
+
+len(df_2008['FlightNum'].unique())
+len(df_mix78['FlightNum'].unique())
+
+major = df_mix78[df_mix78['Origin'] == 'BOS']
+df_mix78['Origin']
+
+most_common_dest = major['Dest'].value_counts()
+
+major_BOS = df_mix78[df_mix78['Dest'] == 'BOS']
+
+most_common_dest = major_BOS['Origin'].value_counts()
+
+major_8 = df_2008['Origin'].value_counts()
+major_7 = df_2007['Origin'].value_counts()
+
+major_6 = df_2006[df_2006['Origin']== 'ATL']
+major_6_de = major_6['Dest'].value_counts()
+
+major_6 = df_2006[df_2006['Origin']== 'LGA']
+major_6_lg = major_6['Dest'].value_counts()
+
+major_6 = df_2006[df_2006['Origin']== 'ORD']
+major_6_or = major_6['Dest'].value_counts()
+
+df_2008['num'] = df_2008['Origin'].value_count()
+
+df_2008['Origin'].value_count()
+
+
+# 각 공항이 Origin에서 등장한 횟수
+origin_counts = df_2006['Origin'].value_counts()
+
+# 각 공항이 Dest에서 등장한 횟수
+dest_counts = df_2006['Dest'].value_counts()
+
+# 두 개 합치기 (Origin과 Dest가 모두 등장하는 공항만 유지)
+total_counts = pd.DataFrame({'Origin_Count': origin_counts, 'Dest_Count': dest_counts}).fillna(0)
+
+# 합계 컬럼 추가
+total_counts['Total_Count'] = total_counts['Origin_Count'] + total_counts['Dest_Count']
+
+# 결과 출력
+print(total_counts)
+
+df_filtered = df_2006.query("(Origin == 'ATL' and Dest == 'LGA') or (Origin == 'LGA' and Dest == 'ATL')")
+print(df_filtered)
+
+# 제외할 컬럼 리스트
+columns_t = [
+    'FlightNum','CRSElapsedTime', 'ActualElapsedTime', 'AirTime', 'ArrDelay', 'DepDelay', 
+    'Cancelled', 'Diverted', 'CarrierDelay', 'WeatherDelay', 
+    'NASDelay', 'SecurityDelay', 'LateAircraftDelay'
+]
+
+# 특정 컬럼 제외
+df_filtered_new = df_filtered[columns_t]
+
+df_filtered_new.isna().sum()
+
+df_filtered_new = df_filtered_new.fillna(0)
+
+# FlightNum으로 그룹화하고, 나머지 컬럼들을 합침
+df_grouped = df_filtered_new.groupby('FlightNum').sum()
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df_grouped['delay'] = df_grouped['ArrDelay'] + df_grouped['DepDelay']
+
+columns_df = [
+    'delay','Diverted','Cancelled','year']
+df_grouped['year'] = 6
+df_grouped_final = df_grouped[columns_df]
+
+df_filtered_7 = df_2007.query("(Origin == 'ATL' and Dest == 'LGA') or (Origin == 'LGA' and Dest == 'ATL')")
+df_filtered_8 = df_2008.query("(Origin == 'ATL' and Dest == 'LGA') or (Origin == 'LGA' and Dest == 'ATL')")
+
+df_filtered_new_7 = df_filtered_7[columns_t]
+df_filtered_new_8 = df_filtered_8[columns_t]
+
+df_filtered_new_8.isna().sum()
+    
+df_filtered_new_7 = df_filtered_new_7.fillna(0)
+df_filtered_new_8 = df_filtered_new_8.fillna(0)
+
+df_grouped_7 = df_filtered_new_7.groupby('FlightNum').sum()
+df_grouped_8 = df_filtered_new_8.groupby('FlightNum').sum()
+
+df_grouped_7['delay'] = df_grouped_7['ArrDelay'] + df_grouped_7['DepDelay']
+df_grouped_8['delay'] = df_grouped_8['ArrDelay'] + df_grouped_8['DepDelay']
+
+df_grouped_7['year'] = 7
+df_grouped_8['year'] = 8
+df_grouped_final_7 = df_grouped_7[columns_df]
+df_grouped_final_8 = df_grouped_8[columns_df]
+
+df_final = pd.concat([df_grouped_final,df_grouped_final_7,df_grouped_final_8])
+
+
+# 10개의 FlightNum을 선택 (이 숫자들은 리스트로 지정)
+print(df_final.columns)
+df_final_reset = df_final.reset_index()
+
+# 결과 확인
+print(df_final_reset.columns)
+
+flight_numbers = [372, 2394, 357, 373, 368, 376, 1297, 358, 371, 370]
+flight_numbers = [359, 501, 121, 1142, 2377, 351, 755, 363, 1712, 353]
+# 필터링하여 필요한 데이터만 선택
+df_flight_delay = df_final_reset[df_final_reset['FlightNum'].isin(flight_numbers)]
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 그리기 (delay, Diverted, Cancelled 세 가지 변수 시각화)
+plt.figure(figsize=(14, 10))
+
+# 'delay' 컬럼 시각화
+plt.subplot(3, 1, 1)  # 3개의 서브플롯 중 첫 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['delay'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Delay 시간 변화", fontsize=16)
+plt.xlabel("Year", fontsize=12)
+plt.ylabel("Delay 시간 (분)", fontsize=12)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 'Diverted' 컬럼 시각화
+plt.subplot(3, 1, 2)  # 3개의 서브플롯 중 두 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['Diverted'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Diverted 변화", fontsize=16)
+plt.xlabel("Year", fontsize=12)
+plt.ylabel("Diverted", fontsize=12)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 'Cancelled' 컬럼 시각화
+plt.subplot(3, 1, 3)  # 3개의 서브플롯 중 세 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['Cancelled'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Cancelled 변화", fontsize=16)
+plt.xlabel("Year", fontsize=12)
+plt.ylabel("Cancelled", fontsize=12)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 그래프 간격 조정
+plt.tight_layout()
+plt.show()
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.font_manager as fm
+
+# 한글 폰트 설정 (Windows의 경우 Malgun Gothic 사용)
+font_path = "C:\\Windows\\Fonts\\malgun.ttf"  # 경로는 시스템에 맞게 변경
+font_prop = fm.FontProperties(fname=font_path)
+
+# 그래프 스타일 설정
+sns.set(style="whitegrid")
+
+# 그래프 그리기 (delay, Diverted, Cancelled 세 가지 변수 시각화)
+plt.figure(figsize=(14, 10))
+
+# 'delay' 컬럼 시각화
+plt.subplot(3, 1, 1)  # 3개의 서브플롯 중 첫 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['delay'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Delay 시간 변화", fontsize=16, fontproperties=font_prop)
+plt.xlabel("Year", fontsize=12, fontproperties=font_prop)
+plt.ylabel("Delay 시간 (분)", fontsize=12, fontproperties=font_prop)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 'Diverted' 컬럼 시각화
+plt.subplot(3, 1, 2)  # 3개의 서브플롯 중 두 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['Diverted'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Diverted 변화", fontsize=16, fontproperties=font_prop)
+plt.xlabel("Year", fontsize=12, fontproperties=font_prop)
+plt.ylabel("Diverted", fontsize=12, fontproperties=font_prop)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 'Cancelled' 컬럼 시각화
+plt.subplot(3, 1, 3)  # 3개의 서브플롯 중 세 번째
+for flight_num in flight_numbers:
+    df_flight_delay_filtered = df_flight_delay[df_flight_delay['FlightNum'] == flight_num]
+    plt.plot(df_flight_delay_filtered['year'], df_flight_delay_filtered['Cancelled'], marker='o', label=f'FlightNum {flight_num}')
+plt.title("FlightNum 별 연도별 Cancelled 변화", fontsize=16, fontproperties=font_prop)
+plt.xlabel("Year", fontsize=12, fontproperties=font_prop)
+plt.ylabel("Cancelled", fontsize=12, fontproperties=font_prop)
+plt.legend(title="FlightNum", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+# 그래프 간격 조정
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
