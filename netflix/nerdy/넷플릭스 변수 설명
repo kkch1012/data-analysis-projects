@@ -1,0 +1,12 @@
+'show_id'   : 각 쇼의 고유 ID 
+ 'type'     : 쇼의 카테고리
+ 'title'   : 쇼의 이름
+ 'director' : 쇼의 감독 이름 
+ 'cast'     : 배우의 이름 , 쇼의 다른 출연진
+ 'country'  : Netflix에서 프로그램을 시청할 수 있는 국가의 이름
+ 'date_added' : Netflix에 프로그램이 추가된 날짜
+ 'release_year': 쇼의 출시 연도
+ 'rating' : 넷플릭스 등급 표시
+ 'duration': 쇼의 지속 시간
+ 'listed_in': 쇼의 장르
+ 'description : 쇼를 설명하는 일부 텍스트
