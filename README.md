@@ -22,3 +22,5 @@
 - [자연어 처리: 역전파 / 과적합 / 영어,한국어 Word2Vec,국민 청원 데이터 시각화와 분류](./BackPropagation_Overfitting_Word2Vec/)
 - [타이타닉 데이터 분석](./titanic_analysis/)
 - [flask 기본](./flask_basic/)
+- [OCR 연습](./ocr/)
+- [segementation 연습](./segmentation/)
