@@ -1,3 +1,4 @@
+<img width="784" height="368" alt="Image" src="https://github.com/user-attachments/assets/0aad94a2-c296-48fe-8bfa-2d77bf721e1d" />
 스타벅스 크롤링, 거주인구 데이터
 가설1. 거주 인구가 많은 지역에 스타벅스 매장이 많이 입지
 가설2. 직장인이 많은 지역에 스타벅스 매장이 많이 입지
